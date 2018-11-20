@@ -1,4 +1,5 @@
 //! Test that we can access context type.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

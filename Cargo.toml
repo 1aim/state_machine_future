@@ -16,7 +16,7 @@ version = "0.2.0"
 repository = "fitzgen/state_machine_future"
 
 [dependencies]
-futures = "0.1.18"
+futures-preview = "0.3.0-alpha.9"
 rent_to_own = "0.1.0"
 
 [dependencies.derive_state_machine_future]

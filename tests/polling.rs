@@ -1,10 +1,11 @@
 //! Test that we get the expected poll results.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]
 extern crate state_machine_future;
 
-use futures::{Async, Future, Poll};
+use futures::{Future, Poll};
 use state_machine_future::RentToOwn;
 
 #[derive(StateMachineFuture)]
@@ -31,12 +32,12 @@ pub enum Machine {
 }
 
 impl PollMachine for Machine {
-    fn poll_start<'a>(start: &'a mut RentToOwn<'a, Start>) -> Poll<AfterStart, usize> {
-        Ok(Async::Ready(*start.take().0?))
+    fn poll_start<'a>(start: &'a mut RentToOwn<'a, Start>) -> Poll<Result<AfterStart, usize>> {
+        Poll::Ready(*start.take().0)
     }
 
-    fn poll_never_ready<'a>(_: &'a mut RentToOwn<'a, NeverReady>) -> Poll<AfterNeverReady, usize> {
-        Ok(Async::NotReady)
+    fn poll_never_ready<'a>(_: &'a mut RentToOwn<'a, NeverReady>) -> Poll<Result<AfterNeverReady, usize>> {
+        Poll::Pending
     }
 
     fn poll_always_ready<'a>(

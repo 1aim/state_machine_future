@@ -1,5 +1,6 @@
 //! Test that we handle `pub`, `pub(self)`, `pub(super)`, `pub(crate)`,
 //! `pub(in some::module)`, and non-`pub` state machines.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 #![allow(dead_code)]
 

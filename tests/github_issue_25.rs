@@ -1,5 +1,6 @@
 //! Test case taken from
 //! <https://github.com/fitzgen/state_machine_future/issues/25>.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 

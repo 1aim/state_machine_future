@@ -1,4 +1,5 @@
 //! Test that the generated states can be converted to the state enum.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

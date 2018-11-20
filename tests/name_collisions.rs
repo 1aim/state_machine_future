@@ -1,5 +1,6 @@
 //! Test that the generated code is somewhat robust in the face of states with
 //! names of types its using.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 extern crate futures;
 #[macro_use]
@@ -38,25 +39,25 @@ pub enum Fsm {
 impl PollFsm for Fsm {
     fn poll_async<'a>(
         _: &'a mut state_machine_future::RentToOwn<'a, Async>,
-    ) -> futures::Poll<AfterAsync, ()> {
+    ) -> futures::Poll<AfterAsync> {
         unimplemented!()
     }
 
     fn poll_future<'a>(
         _: &'a mut state_machine_future::RentToOwn<'a, Future>,
-    ) -> futures::Poll<AfterFuture, ()> {
+    ) -> futures::Poll<AfterFuture> {
         unimplemented!()
     }
 
     fn poll_poll<'a>(
         _: &'a mut state_machine_future::RentToOwn<'a, Poll>,
-    ) -> futures::Poll<AfterPoll, ()> {
+    ) -> futures::Poll<AfterPoll> {
         unimplemented!()
     }
 
     fn poll_rent_to_own<'a>(
         _: &'a mut state_machine_future::RentToOwn<'a, RentToOwn>,
-    ) -> futures::Poll<AfterRentToOwn, ()> {
+    ) -> futures::Poll<Result<AfterRentToOwn>> {
         unimplemented!()
     }
 }

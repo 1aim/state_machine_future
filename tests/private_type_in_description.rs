@@ -1,4 +1,5 @@
 //! Test that we don't leak private types in public API.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

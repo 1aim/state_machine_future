@@ -1,4 +1,5 @@
 //! Test that we handle overlapping start/ready/error states properly.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

@@ -1,4 +1,5 @@
 //! Test that the generated code has the right transition types.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

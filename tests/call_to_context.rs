@@ -1,4 +1,5 @@
 //! Test that we can access context type.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 #[macro_use]
 extern crate futures;
@@ -45,7 +46,7 @@ impl<T: Clone + 'static> PollWithContext<T> for WithContext<T> {
     fn poll_start<'s, 'c>(
         _: &'s mut RentToOwn<'s, Start>,
         context: &'c mut RentToOwn<'c, Context<T>>,
-    ) -> Poll<AfterStart<T>, ()> {
+    ) -> Poll<AfterStart<T>> {
 
         let value = try_ready!(context.load_from_external_source().poll());
 

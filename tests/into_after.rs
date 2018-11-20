@@ -1,5 +1,6 @@
 //! Test that the `AfterBlah` types implement `From<Successor>` for all
 //! `Successor` typestates that come after the `Blah` typestate.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

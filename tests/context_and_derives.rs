@@ -1,4 +1,5 @@
 //! Test that we can access context type.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 #[macro_use]
 extern crate state_machine_future;

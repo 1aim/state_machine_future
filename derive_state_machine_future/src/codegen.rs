@@ -239,7 +239,7 @@ impl ToTokens for StateMachine<phases::ReadyForCodegen> {
             Some(_) => quote!{
                 let context = match self.context.take() {
                     Some(context) => context,
-                    None => return Ok(#futures_crate::Async::NotReady),
+                    None => return #futures_crate::Poll::Pending,
                 };
             },
             None => quote!{},
@@ -266,15 +266,14 @@ impl ToTokens for StateMachine<phases::ReadyForCodegen> {
 
             impl #impl_generics #futures_crate::Future
                 for #state_machine_ident #ty_generics #where_clause {
-                type Item = #future_item;
-                type Error = #future_error;
+                type Output = Result<#future_item, #future_error>;
 
                 #[allow(unreachable_code)]
-                fn poll(&mut self) -> #futures_crate::Poll<Self::Item, Self::Error> {
+                fn poll(mut self: ::std::pin::Pin<&mut Self>, lw: &#futures_crate::task::LocalWaker) -> #futures_crate::Poll<Self::Output> {
                     loop {
                         let state = match self.current_state.take() {
                             Some(state) => state,
-                            None => return Ok(#futures_crate::Async::NotReady),
+                            None => return #futures_crate::Poll::Pending,
                         };
                         #extract_context
                         self.current_state = match state {
@@ -396,7 +395,7 @@ impl State<phases::ReadyForCodegen> {
         if self.ready {
             return quote! {
                 #states_enum::#ident(#ident(#var)) => {
-                    return Ok(#futures_crate::Async::Ready(#var));
+                    return #futures_crate::Poll::Ready(Ok(#var));
                 }
             };
         }
@@ -407,7 +406,7 @@ impl State<phases::ReadyForCodegen> {
         if self.error {
             return quote!{
                 #states_enum::#error_ident(#error_ident(#error_var)) => {
-                    return Err(#error_var);
+                    return Poll::Ready(Err(#error_var));
                 }
             };
         }
@@ -419,7 +418,7 @@ impl State<phases::ReadyForCodegen> {
         let ready = self.transitions.iter().map(|t| {
             let t_var = to_var(t.to_string());
             quote! {
-                Ok(#futures_crate::Async::Ready(#after::#t(#t_var))) => {
+                #futures_crate::Poll::Ready(Ok(#after::#t(#t_var))) => {
                     Some(#states_enum::#t(#t_var))
                 }
             }
@@ -454,12 +453,12 @@ impl State<phases::ReadyForCodegen> {
                         #poll_method_call
                     );
                 match result {
-                    Err(e) => {
+                    #futures_crate::Poll::Ready(Err(e)) => {
                         Some(#states_enum::#error_ident(#error_ident(e)))
                     }
-                    Ok(#futures_crate::Async::NotReady) => {
+                    #futures_crate::Poll::Pending => {
                         self.current_state = #var.map(#states_enum::#ident);
-                        return Ok(#futures_crate::Async::NotReady);
+                        return #futures_crate::Poll::Pending;
                     }
                     #( #ready )*
                 }
@@ -471,9 +470,9 @@ impl State<phases::ReadyForCodegen> {
         doc_string(format!(
             "Poll the future when it is in the `{}` state and see if it is ready \
              to transition to a new state. If the future is ready to transition \
-             into a new state, return `Ok(Async::Ready({}))`. If the future is \
+             into a new state, return `Ok(Poll::Ready({}))`. If the future is \
              not ready to transition into a new state, return \
-             `Ok(Async::NotReady)`. If an error is encountered, return `Err({})`. \
+             `Ok(Poll::Pending)`. If an error is encountered, return `Err({})`. \
              The `RentToOwn` wrapper allows you to choose whether to take \
              ownership of the current state or not.",
             self.ident.to_string(),
@@ -511,7 +510,7 @@ impl State<phases::ReadyForCodegen> {
             fn #poll_method<'smf_poll_state, 'smf_poll_context>(
                 _: &'smf_poll_state mut #smf_crate::RentToOwn<'smf_poll_state, #me #ty_generics>
                 #context_param
-            ) -> #futures_crate::Poll<#after #after_ty_generics, #error_type>;
+            ) -> #futures_crate::Poll<Result<#after #after_ty_generics, #error_type>>;
         }
     }
 }

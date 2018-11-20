@@ -1,4 +1,5 @@
 //! Test that we add derive traits properly.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 extern crate futures;
 #[macro_use]

@@ -1,4 +1,5 @@
 //! Test that we can start the state machine in any state.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]

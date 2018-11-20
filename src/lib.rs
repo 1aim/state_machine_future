@@ -560,6 +560,7 @@ dual licensed as above, without any additional terms or conditions.
 
 #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
+#![feature(futures_api)]
 
 extern crate futures;
 extern crate rent_to_own;

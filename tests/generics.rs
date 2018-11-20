@@ -2,6 +2,7 @@
 //!
 //! Here's the deal: we don't figure out which generics are used in which
 //! variants, so it is up to you to add phantom datas as needed.
+#![feature(futures_api, pin, arbitrary_self_types)]
 
 extern crate futures;
 #[macro_use]
@@ -72,17 +73,17 @@ where
 {
     fn poll_start<'b>(
         _: &'b mut RentToOwn<'b, Start<'a, 'c, 'd, T, E, C, D>>,
-    ) -> Poll<AfterStart<'a, 'd, E, D>, E> {
+    ) -> Poll<Result<AfterStart<'a, 'd, E, D>, E>> {
         unimplemented!()
     }
 
-    fn poll_complex<'b>(_: &'b mut RentToOwn<'b, Complex<'a, 'd>>) -> Poll<AfterComplex<E>, E> {
+    fn poll_complex<'b>(_: &'b mut RentToOwn<'b, Complex<'a, 'd>>) -> Poll<Result<AfterComplex<E>, E>> {
         unimplemented!()
     }
 
     fn poll_associated_type<'b>(
         _: &'b mut RentToOwn<'b, AssociatedType<E, D>>,
-    ) -> Poll<AfterAssociatedType<E>, E> {
+    ) -> Poll<Result<AfterAssociatedType<E>, E>> {
         unimplemented!()
     }
 }
@@ -101,7 +102,7 @@ impl AssociatedTypesTrait for String {
 fn check_generic_start() {
     let test = String::from("test");
 
-    let _: Box<Future<Item = i32, Error = io::Error>> = Box::new(Fsm::start(
+    let _: Box<Future<Output = Result<i32, io::Error>>> = Box::new(Fsm::start(
         StartType {
             _data: 0,
             _phan: Default::default(),

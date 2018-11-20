@@ -1,4 +1,5 @@
 //! Test that we handle different kinds of state enums correctly.
+#![feature(futures_api, pin, arbitary_self_types)]
 
 extern crate futures;
 #[macro_use]
@@ -25,17 +26,17 @@ pub enum Fsm {
 }
 
 impl PollFsm for Fsm {
-    fn poll_unit<'a>(unit: &'a mut RentToOwn<'a, Unit>) -> Poll<AfterUnit, ()> {
+    fn poll_unit<'a>(unit: &'a mut RentToOwn<'a, Unit>) -> Poll<AfterUnit> {
         match unit.take() {
             self::Unit => unimplemented!(),
         }
     }
-    fn poll_tuple<'a>(tuple: &'a mut RentToOwn<'a, Tuple>) -> Poll<AfterTuple, ()> {
+    fn poll_tuple<'a>(tuple: &'a mut RentToOwn<'a, Tuple>) -> Poll<AfterTuple> {
         match tuple.take() {
             Tuple(3, true) | Tuple(_, _) => unimplemented!(),
         }
     }
-    fn poll_struct<'a>(st: &'a mut RentToOwn<'a, Struct>) -> Poll<AfterStruct, ()> {
+    fn poll_struct<'a>(st: &'a mut RentToOwn<'a, Struct>) -> Poll<AfterStruct> {
         match st.take() {
             Struct { x: 3, y: true } | Struct { .. } => unimplemented!(),
         }
